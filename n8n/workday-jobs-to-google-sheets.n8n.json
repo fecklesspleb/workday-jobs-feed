@@ -1,0 +1,372 @@
+{
+  "name": "Daily new jobs from Workday career sites to Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Daily new jobs from Workday career sites to Google Sheets\n\n### How it works\n1. **Every morning at 8** starts the workflow.\n2. **Search settings** holds the Workday career site URLs, title keywords and a spending cap.\n3. **Run Workday Jobs Scraper** calls the Apify API (run-sync-get-dataset-items) for the fecklesspleb/workday-jobs-scraper Actor. It reads each site's public job list, splits large sites by facet to get past the 2,000-result cap, and with monitoring mode (onlyNewJobs) returns only jobs it has not returned before, so later runs return and charge only new postings.\n4. **Keep job records** drops the free status and expired-job records the Actor can also write.\n5. **Append or update job rows** writes one row per job, matched on Job ID.\n\n### Setup\n1. Apify: copy your API token from Apify Console > Settings > API & Integrations. Create a **Header Auth** credential named `Apify API` with Name `Authorization` and Value `Bearer YOUR_TOKEN`, and select it in **Run Workday Jobs Scraper**.\n2. Google Sheets: make a sheet whose first row has these headers: Job ID, Company, Title, Location, Employment type, Posted, Salary, URL, First seen. Connect your Google Sheets credential and pick the document and tab in **Append or update job rows**.\n3. Edit **Search settings**: career site URLs (copy them from the browser up to the site name), keywords, and `maxUsd`. Keep at least one URL: with an empty list the Actor runs a short paid demo instead.\n4. Click **Execute workflow** once to test, then activate it.\n\n### Cost\nThe Actor charges $0.002 per job returned. `maxUsd` caps each run (default $0.50).\n\n### Customization tips\n- Use a different `stateStoreName` for each independent search.\n- Add a Gmail or Slack node after **Shape job row** to get the new jobs as a message.",
+        "height": 860,
+        "width": 520
+      },
+      "id": "aa8b3278-b552-5a24-b40e-6da8ea1fcbb2",
+      "name": "Main note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Schedule and settings\nChange the run time, career sites, keywords and spending cap here.",
+        "height": 360,
+        "width": 460,
+        "color": 7
+      },
+      "id": "e3d4d310-6495-550a-8909-76803686c4b8",
+      "name": "Section: settings",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. Run the Actor\nOne Apify API call per run. maxTotalChargeUsd stops spend at your cap.",
+        "height": 360,
+        "width": 460,
+        "color": 7
+      },
+      "id": "6b196f33-a8c4-5ee6-9d9e-7370220594f1",
+      "name": "Section: scrape",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        420,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. Save to Google Sheets\nKeeps job records only and upserts them by Job ID.",
+        "height": 360,
+        "width": 680,
+        "color": 7
+      },
+      "id": "96e19680-c0ab-580a-8a0e-dc6b045e8361",
+      "name": "Section: sheet",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        900,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "b8c7b62b-1b7c-5614-9729-3fe17cb86959",
+      "name": "Every morning at 8",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "08ea5a9d-7be4-5471-ad8c-a76560d06098",
+              "name": "companies",
+              "value": "[\"https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite\", \"https://workday.wd5.myworkdayjobs.com/Workday\"]",
+              "type": "array"
+            },
+            {
+              "id": "56c68281-6bb7-51bd-8018-d102a1cce315",
+              "name": "keywords",
+              "value": "[\"engineer\", \"data\"]",
+              "type": "array"
+            },
+            {
+              "id": "2b62106f-897c-525b-a2a9-84111832283d",
+              "name": "stateStoreName",
+              "value": "n8n-workday-jobs",
+              "type": "string"
+            },
+            {
+              "id": "c9c56da3-372e-5500-b0e6-d20806ed0766",
+              "name": "maxUsd",
+              "value": "0.5",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "27d914f7-8c41-5dfa-96da-ddfa4a4b417d",
+      "name": "Search settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "maxTotalChargeUsd",
+              "value": "={{ $json.maxUsd }}"
+            },
+            {
+              "name": "timeout",
+              "value": "280"
+            },
+            {
+              "name": "clean",
+              "value": "true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ companies: $json.companies, keywords: $json.keywords, onlyNewJobs: true, stateStoreName: $json.stateStoreName, includeDescription: false, maxTotalJobs: 500 }) }}",
+        "options": {
+          "timeout": 320000
+        }
+      },
+      "id": "37288b68-514e-5505-acb5-d918f1fc7e6b",
+      "name": "Run Workday Jobs Scraper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "79893b5f-a825-544f-aebd-2d46fd605950",
+              "leftValue": "={{ !$json.type && ($json.status === undefined || $json.status === null || $json.status === 'active') && !!$json.uid && !!$json.url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "da698028-5d30-5a0a-85b7-179ef36a8df8",
+      "name": "Keep job records",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bb65c4e9-31ca-59a1-b5bb-c661a6246d24",
+              "name": "Job ID",
+              "value": "={{ $json.uid }}",
+              "type": "string"
+            },
+            {
+              "id": "73037079-0cd4-568b-a093-625ab2998001",
+              "name": "Company",
+              "value": "={{ $json.companyName || $json.companySlug }}",
+              "type": "string"
+            },
+            {
+              "id": "4b94b08f-dd5d-51fb-b2bd-5bbf5fafd777",
+              "name": "Title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "fcd3fde6-c9df-5f9e-85d0-f3b53847a056",
+              "name": "Location",
+              "value": "={{ ($json.locations || [$json.location]).filter(Boolean).join('; ') }}",
+              "type": "string"
+            },
+            {
+              "id": "482a4858-c813-5715-951f-e580919d7c6f",
+              "name": "Employment type",
+              "value": "={{ $json.employmentType || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "822caa65-5f9b-592e-9961-f787514e5fd2",
+              "name": "Posted",
+              "value": "={{ $json.postedAt ? String($json.postedAt).slice(0, 10) : '' }}",
+              "type": "string"
+            },
+            {
+              "id": "001139bd-c3bf-52d8-8337-65ee009d3491",
+              "name": "Salary",
+              "value": "={{ $json.salaryText || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "c3f8cb72-15cc-5cad-aef7-5bcc267f759f",
+              "name": "URL",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "e30aab4a-3093-5523-ac89-c0537f12490e",
+              "name": "First seen",
+              "value": "={{ $now.toISODate() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "90dba1b1-6153-548e-b61e-7589b02502da",
+      "name": "Shape job row",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1180,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": ""
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Job ID"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "db87a66c-e746-58cf-9ecf-d953fb7e96f5",
+      "name": "Append or update job rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1400,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Every morning at 8": {
+      "main": [
+        [
+          {
+            "node": "Search settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search settings": {
+      "main": [
+        [
+          {
+            "node": "Run Workday Jobs Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Workday Jobs Scraper": {
+      "main": [
+        [
+          {
+            "node": "Keep job records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep job records": {
+      "main": [
+        [
+          {
+            "node": "Shape job row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shape job row": {
+      "main": [
+        [
+          {
+            "node": "Append or update job rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

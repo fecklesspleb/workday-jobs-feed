@@ -1,0 +1,4 @@
+# One Workday career site URL per line, copied from the browser up to the site name.
+https://workday.wd5.myworkdayjobs.com/Workday
+https://salesforce.wd12.myworkdayjobs.com/External_Career_Site
+https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite

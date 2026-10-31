@@ -1,0 +1,296 @@
+{
+ "title": "Workday Jobs Scraper input",
+ "type": "object",
+ "schemaVersion": 1,
+ "properties": {
+  "companies": {
+   "title": "Workday career site URLs",
+   "type": "array",
+   "description": "One Workday career site URL per line, as shown in your browser, for example https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite or https://wd5.myworkdaysite.com/recruiting/qvc/QRG. A company careers page that links to or embeds a Workday site also works. The tenant, data center (wd1, wd3, wd5...) and site name are read from the URL. Bare company names and non-Workday URLs are skipped with a message, and the run fails if no entry is a valid Workday career site. Leave empty for a demo run: up to 4 sample jobs from https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite at the normal per-job price.",
+   "editor": "stringList"
+  },
+  "keywords": {
+   "title": "Title keywords (any)",
+   "type": "array",
+   "description": "Keep jobs whose title contains at least one of these words (case-insensitive). Leave empty to keep all.",
+   "editor": "stringList",
+   "sectionCaption": "Filters"
+  },
+  "excludeKeywords": {
+   "title": "Exclude title keywords",
+   "type": "array",
+   "description": "Drop jobs whose title contains any of these words, for example 'intern' or 'senior'.",
+   "editor": "stringList"
+  },
+  "searchInDescription": {
+   "title": "Match keywords in description too",
+   "type": "boolean",
+   "description": "Also match 'Title keywords' against the job description. Works with 'Include description' on or off, because Workday detail pages are always read.",
+   "default": false
+  },
+  "locations": {
+   "title": "Locations (any)",
+   "type": "array",
+   "description": "Keep jobs whose location contains one of these strings, for example 'London', 'United States', 'Remote'.",
+   "editor": "stringList"
+  },
+  "remoteOnly": {
+   "title": "Remote jobs only",
+   "type": "boolean",
+   "description": "Keep only jobs marked remote by the ATS or with 'remote' in the location.",
+   "default": false
+  },
+  "postedWithinDays": {
+   "title": "Posted within last N days",
+   "type": "integer",
+   "description": "Keep only jobs first published in the last N days. Empty keeps all.",
+   "minimum": 1,
+   "maximum": 3650
+  },
+  "timeRange": {
+   "title": "Posted within (fixed window)",
+   "type": "string",
+   "editor": "select",
+   "enum": [
+    "1h",
+    "24h",
+    "7d",
+    "30d",
+    "all"
+   ],
+   "enumTitles": [
+    "Last hour",
+    "Last 24 hours",
+    "Last 7 days",
+    "Last 30 days",
+    "Any time"
+   ],
+   "description": "Optional. Only jobs whose ATS publish or update date falls in this window, as in career-site-jobs-feed. When set it replaces 'Posted within days'; 'Any time' turns the date limit off. Undated jobs follow 'Include undated jobs'. Empty by default (no change)."
+  },
+  "includeUndatedJobs": {
+   "title": "Keep jobs without a posting date",
+   "type": "boolean",
+   "description": "When 'Posted within last N days' is set, keep jobs whose ATS does not expose a date.",
+   "default": true
+  },
+  "hasSalary": {
+   "title": "Only jobs with a salary",
+   "type": "boolean",
+   "description": "Return only jobs that state a salary, from the ATS's pay field or a range in the description (any currency or period). Jobs without one are dropped before they are output, so they are never charged.",
+   "default": false
+  },
+  "minAnnualSalaryUsd": {
+   "title": "Minimum annual salary (USD)",
+   "type": "integer",
+   "editor": "number",
+   "description": "Keep jobs whose annual salary in US dollars reaches this amount (the top of the range, or its only figure, is at least this). Salaries are annualised (hour x 2,080, day x 260, week x 52, month x 12) and converted with a fixed rate table bundled with the Actor (rough reference rates, see salaryAnnualUsdMin). Jobs whose salary cannot be converted (none given, no pay period, or an unlisted currency) are dropped unless 'Keep jobs without a salary' is on.",
+   "minimum": 0
+  },
+  "maxAnnualSalaryUsd": {
+   "title": "Maximum annual salary (USD)",
+   "type": "integer",
+   "editor": "number",
+   "description": "Keep jobs whose annual USD salary starts at or below this amount (the bottom of the range, or its only figure). Same conversion and handling of jobs without a convertible salary as the minimum.",
+   "minimum": 0
+  },
+  "includeJobsWithoutSalary": {
+   "title": "Keep jobs without a salary",
+   "type": "boolean",
+   "description": "With a minimum or maximum annual USD salary set, also keep jobs whose salary is missing or cannot be converted. Ignored when 'Only jobs with a salary' is on (jobs with no salary are dropped) and when no USD bound is set.",
+   "default": false
+  },
+  "workArrangement": {
+   "title": "Work arrangement",
+   "type": "array",
+   "editor": "select",
+   "items": {
+    "type": "string",
+    "enum": [
+     "remote",
+     "hybrid",
+     "onsite"
+    ],
+    "enumTitles": [
+     "Remote",
+     "Hybrid",
+     "On-site"
+    ]
+   },
+   "uniqueItems": true,
+   "description": "Keep jobs with one of these arrangements (derived from the ATS field, location and title). Jobs with no detectable arrangement are left out when this is set. Empty by default (no change)."
+  },
+  "employmentTypes": {
+   "title": "Employment type",
+   "type": "array",
+   "editor": "select",
+   "items": {
+    "type": "string",
+    "enum": [
+     "FULL_TIME",
+     "PART_TIME",
+     "CONTRACTOR",
+     "TEMPORARY",
+     "INTERN",
+     "PER_DIEM",
+     "VOLUNTEER",
+     "OTHER"
+    ],
+    "enumTitles": [
+     "Full time",
+     "Part time",
+     "Contractor",
+     "Temporary",
+     "Internship",
+     "Per diem",
+     "Volunteer",
+     "Other"
+    ]
+   },
+   "uniqueItems": true,
+   "description": "Keep jobs whose normalised employment type is one of these. Jobs whose ATS gives no type are left out when this is set. Empty by default (no change)."
+  },
+  "seniority": {
+   "title": "Seniority",
+   "type": "array",
+   "editor": "select",
+   "items": {
+    "type": "string",
+    "enum": [
+     "intern",
+     "junior",
+     "mid",
+     "senior",
+     "staff",
+     "lead",
+     "principal",
+     "manager",
+     "director",
+     "vp",
+     "executive"
+    ],
+    "enumTitles": [
+     "Intern",
+     "Junior / entry",
+     "Mid",
+     "Senior",
+     "Staff",
+     "Lead",
+     "Principal",
+     "Manager",
+     "Director",
+     "VP",
+     "Executive"
+    ]
+   },
+   "uniqueItems": true,
+   "description": "Keep jobs with one of these seniority levels (derived from the title). Jobs whose title shows no level are left out when this is set. Empty by default (no change)."
+  },
+  "visaSponsorship": {
+   "title": "Visa sponsorship",
+   "type": "string",
+   "editor": "select",
+   "enum": [
+    "any",
+    "yes",
+    "not_no"
+   ],
+   "enumTitles": [
+    "Any",
+    "Mentions sponsorship is offered",
+    "Exclude jobs that say no sponsorship"
+   ],
+   "default": "any",
+   "description": "Filter on visaSponsorship, read from the description text (yes / no / not stated). Pattern-based, not a legal statement by the employer. When on, job details are fetched (slower runs) and visaSponsorship / visaSponsorshipEvidence are added to each record; the description itself is still only output when 'Include description' is on."
+  },
+  "maxYearsExperience": {
+   "title": "Max years of experience required",
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 30,
+   "description": "Drop jobs whose description asks for more years than this (e.g. 2 for early-career). Jobs that state no number are kept. When set, job details are fetched (slower runs) and yearsExperienceMin / yearsExperienceMax are added to each record."
+  },
+  "dedupeBy": {
+   "title": "Remove duplicate jobs",
+   "type": "string",
+   "editor": "select",
+   "description": "Drop duplicates inside this run before they are output, so you never pay for them. <b>None</b>: every job is output (as before). <b>Same job</b>: a job with the same company, title and first location as one already output in this run is dropped (the dedupeKey field). <b>Same company and title (merge locations)</b>: jobs of one company with the same title are output as one record whose locations list holds all their locations, with duplicateCount and mergedUids; such records are output when the company's board has been read. Duplicates of jobs output by earlier runs are not affected (use Only new jobs for that).",
+   "enum": [
+    "none",
+    "job",
+    "companyTitle"
+   ],
+   "enumTitles": [
+    "None",
+    "Same job (company + title + location)",
+    "Same company and title (merge locations)"
+   ],
+   "default": "none"
+  },
+  "onlyNewJobs": {
+   "title": "Only new jobs (monitoring mode)",
+   "type": "boolean",
+   "description": "Return only jobs not returned by a previous run with this option on. State is kept in a named key-value store, so scheduled runs give you a clean feed of new postings and you pay only for new ones.",
+   "default": false,
+   "sectionCaption": "Monitoring and output"
+  },
+  "stateStoreName": {
+   "title": "State store name",
+   "type": "string",
+   "description": "Named key-value store used by 'Only new jobs'. Use different names for independent monitors.",
+   "default": "workday-jobs-scraper-state",
+   "editor": "textfield"
+  },
+  "includeExpired": {
+   "title": "Report expired jobs",
+   "type": "boolean",
+   "default": false,
+   "description": "On scheduled runs, add a free record with status 'expired' for each job an earlier run returned that its career site no longer lists. Only sites read completely in this run are checked (not when 'Max jobs per company', 'Max total jobs' or the cost limit stopped the read, or when the site has rows past Workday's 2,000-row cap that could not be reached). Job records get status 'active' while this is on. Uses the state store."
+  },
+  "includeDescription": {
+   "title": "Include description",
+   "type": "boolean",
+   "description": "Include the full job description. Workday detail pages are always read, so locations, requisition ID and company come back filled in. This setting only controls whether the description text is included.",
+   "default": true
+  },
+  "descriptionFormat": {
+   "title": "Description format",
+   "type": "string",
+   "description": "Plain text, HTML, or both.",
+   "editor": "select",
+   "enum": [
+    "text",
+    "html",
+    "both"
+   ],
+   "enumTitles": [
+    "Plain text",
+    "HTML",
+    "Both"
+   ],
+   "default": "text"
+  },
+  "maxJobsPerCompany": {
+   "title": "Max jobs per company",
+   "type": "integer",
+   "description": "Stop after this many matching jobs per company. 0 means no limit.",
+   "minimum": 0,
+   "default": 0
+  },
+  "maxTotalJobs": {
+   "title": "Max jobs in total",
+   "type": "integer",
+   "description": "Stop the whole run after this many jobs. 0 means no limit. The run also stops at your 'Maximum cost per run'.",
+   "minimum": 0,
+   "default": 0
+  },
+  "maxConcurrency": {
+   "title": "Companies in parallel",
+   "type": "integer",
+   "description": "How many companies to scrape at the same time. Requests to each host are rate limited regardless.",
+   "minimum": 1,
+   "maximum": 20,
+   "default": 5
+  }
+ },
+ "required": []
+}

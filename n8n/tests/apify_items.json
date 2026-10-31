@@ -1,0 +1,50 @@
+[
+ {
+  "id": "JR2001996",
+  "ats": "workday",
+  "companySlug": "nvidia/NVIDIAExternalCareerSite",
+  "companyName": "NVIDIA USA",
+  "title": "Principal Firmware Engineer – Server Manageability and Observability",
+  "location": "US, CA, Santa Clara",
+  "locations": ["US, CA, Santa Clara"],
+  "country": "United States of America",
+  "isRemote": false,
+  "workplaceType": null,
+  "employmentType": "FULL_TIME",
+  "postedAt": "2026-10-28",
+  "url": "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite/job/US-CA-Santa-Clara/Principal-Firmware-Engineer---Server-Manageability-and-Observability_JR2001996",
+  "salaryText": null,
+  "hiringEntity": "2100 NVIDIA USA",
+  "requisitionId": "JR2001996",
+  "uid": "workday:nvidia:JR2001996",
+  "scrapedAt": "2026-10-29T01:01:18.634640+00:00"
+ },
+ {
+  "id": "JR-0111033",
+  "ats": "workday",
+  "companySlug": "workday/Workday",
+  "companyName": "Workday, Inc.",
+  "title": "Principal DataOps Engineer (DevOps for Data)",
+  "location": "USA, CA, Pleasanton",
+  "locations": ["USA, CA, Pleasanton", "USA, GA, Atlanta"],
+  "employmentType": "FULL_TIME",
+  "postedAt": "2026-10-30",
+  "url": "https://workday.wd5.myworkdayjobs.com/Workday/job/USA-CA-Pleasanton/Principal-DataOps-Engineer--DevOps-for-Data-_JR-0111033",
+  "salaryText": null,
+  "uid": "workday:workday:JR-0111033"
+ },
+ {
+  "status": "expired",
+  "uid": "workday:nvidia:JR1999999",
+  "id": "JR1999999",
+  "title": "Old posting",
+  "url": "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite/job/US-CA-Santa-Clara/Old_JR1999999",
+  "companyName": "NVIDIA USA",
+  "lastSeenAt": "2026-10-29T01:01:18+00:00",
+  "expiredDetectedAt": "2026-10-30T01:01:18+00:00"
+ },
+ {
+  "type": "status",
+  "message": "Sample status record for the test."
+ }
+]
