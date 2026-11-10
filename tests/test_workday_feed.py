@@ -216,7 +216,7 @@ class Apify(unittest.TestCase):
             self.assertEqual(rc, 0)
             url, body, kw = fake.calls[0]
             self.assertTrue(url.startswith(
-                "https://api.apify.com/v2/acts/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items?"))
+                "https://api.apify.com/v2/actors/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items?"))
             self.assertIn("maxTotalChargeUsd=0.25", url)
             self.assertIn("timeout=280", url)
             self.assertNotIn("tkn", url)
