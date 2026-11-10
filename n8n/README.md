@@ -8,7 +8,7 @@ File: `workday-jobs-to-google-sheets.n8n.json` (import it with **Workflows > Imp
 
 1. **Every morning at 8** (Schedule Trigger).
 2. **Search settings** (Edit Fields): `companies` (Workday career site URLs), `keywords`, `stateStoreName`, `maxUsd`.
-3. **Run Workday Jobs Scraper** (HTTP Request): `POST https://api.apify.com/v2/acts/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items?maxTotalChargeUsd=<maxUsd>&timeout=280&clean=true` with the body `{companies, keywords, onlyNewJobs: true, stateStoreName, includeDescription: false, maxTotalJobs: 500}`. The response is a JSON array, which n8n turns into one item per record.
+3. **Run Workday Jobs Scraper** (HTTP Request): `POST https://api.apify.com/v2/actors/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items?maxTotalChargeUsd=<maxUsd>&timeout=280&clean=true` with the body `{companies, keywords, onlyNewJobs: true, stateStoreName, includeDescription: false, maxTotalJobs: 500}`. The response is a JSON array, which n8n turns into one item per record.
 4. **Keep job records** (Filter): drops the Actor's free status and expired-job records and keeps records with a `uid` and `url`.
 5. **Shape job row** (Edit Fields): Job ID, Company, Title, Location, Employment type, Posted, Salary, URL, First seen. Company comes from the Actor's `companyName` field (the hiring entity, for example `NVIDIA USA`).
 6. **Append or update job rows** (Google Sheets): matches on the Job ID column.

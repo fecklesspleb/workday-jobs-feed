@@ -9,7 +9,7 @@ def nid(name):
     return str(uuid.uuid5(NS, name))
 
 
-ACTOR_URL = "https://api.apify.com/v2/acts/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items"
+ACTOR_URL = "https://api.apify.com/v2/actors/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items"
 
 MAIN_NOTE = """## Daily new jobs from Workday career sites to Google Sheets
 
