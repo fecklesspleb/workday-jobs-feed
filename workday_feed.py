@@ -314,7 +314,7 @@ def run_actor(body: dict, token: str, max_usd: float, transport=http) -> list:
     # timeout=280: the Actor stops starting requests 20 s before its own timeout, so the run
     # ends before run-sync's 300 s limit and the items it already wrote come back.
     qs = urllib.parse.urlencode({"maxTotalChargeUsd": max_usd, "timeout": 280, "clean": "true"})
-    url = f"{APIFY_BASE}/acts/{APIFY_ACTOR}/run-sync-get-dataset-items?{qs}"
+    url = f"{APIFY_BASE}/actors/{APIFY_ACTOR}/run-sync-get-dataset-items?{qs}"
     items = json.loads(transport(url, body=body, timeout=320, headers={"Authorization": f"Bearer {token}"}))
     if not isinstance(items, list):
         raise RuntimeError(f"unexpected Apify response: {str(items)[:300]}")
