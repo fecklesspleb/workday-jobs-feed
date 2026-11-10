@@ -14,7 +14,7 @@ got = len(run["Run Workday Jobs Scraper"][0]["data"]["main"][0])
 req = [json.loads(l) for l in open(log)]
 assert len(req) == 1, req
 r = req[0]
-assert r["path"].startswith("/v2/acts/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items?"), r["path"]
+assert r["path"].startswith("/v2/actors/fecklesspleb~workday-jobs-scraper/run-sync-get-dataset-items?"), r["path"]
 assert "maxTotalChargeUsd=0.5" in r["path"] and "timeout=280" in r["path"], r["path"]
 assert r["auth"] == "Bearer test-token"
 b = r["body"]
